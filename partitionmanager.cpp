@@ -686,34 +686,6 @@ int TWPartitionManager::Run_Backup(void) {
 			return false;
 		}
 	}
-	DataManager::GetValue(TW_BACKUP_RECOVERY_VAR, check);
-	if (check) {
-		backup_recovery = Find_Partition_By_Path("/recovery");
-		if (backup_recovery != NULL) {
-			partition_count++;
-			if (backup_recovery->Backup_Method == 1)
-				file_bytes += backup_recovery->Backup_Size;
-			else
-				img_bytes += backup_recovery->Backup_Size;
-		} else {
-			LOGE("Unable to locate recovery partition.\n");
-			return false;
-		}
-	}
-	DataManager::GetValue(TW_BACKUP_BOOT_VAR, check);
-	if (check) {
-		backup_boot = Find_Partition_By_Path("/boot");
-		if (backup_boot != NULL) {
-			partition_count++;
-			if (backup_boot->Backup_Method == 1)
-				file_bytes += backup_boot->Backup_Size;
-			else
-				img_bytes += backup_boot->Backup_Size;
-		} else {
-			LOGE("Unable to locate boot partition.\n");
-			return false;
-		}
-	}
 	DataManager::GetValue(TW_BACKUP_ANDSEC_VAR, check);
 	if (check) {
 		backup_andsec = Find_Partition_By_Path("/and-sec");
@@ -821,10 +793,6 @@ int TWPartitionManager::Run_Backup(void) {
 	if (!Backup_Partition(backup_data, Full_Backup_Path, do_md5, &img_bytes_remaining, &file_bytes_remaining, &img_time, &file_time, &img_bytes, &file_bytes))
 		return false;
 	if (!Backup_Partition(backup_cache, Full_Backup_Path, do_md5, &img_bytes_remaining, &file_bytes_remaining, &img_time, &file_time, &img_bytes, &file_bytes))
-		return false;
-	if (!Backup_Partition(backup_recovery, Full_Backup_Path, do_md5, &img_bytes_remaining, &file_bytes_remaining, &img_time, &file_time, &img_bytes, &file_bytes))
-		return false;
-	if (!Backup_Partition(backup_boot, Full_Backup_Path, do_md5, &img_bytes_remaining, &file_bytes_remaining, &img_time, &file_time, &img_bytes, &file_bytes))
 		return false;
 	if (!Backup_Partition(backup_andsec, Full_Backup_Path, do_md5, &img_bytes_remaining, &file_bytes_remaining, &img_time, &file_time, &img_bytes, &file_bytes))
 		return false;
@@ -948,15 +916,6 @@ int TWPartitionManager::Run_Restore(string Restore_Name) {
 		}
 		partition_count++;
 	}
-	DataManager::GetValue(TW_RESTORE_BOOT_VAR, check);
-	if (check > 0) {
-		restore_boot = Find_Partition_By_Path("/boot");
-		if (restore_boot == NULL) {
-			LOGE("Unable to locate boot partition.\n");
-			return false;
-		}
-		partition_count++;
-	}
 	DataManager::GetValue(TW_RESTORE_ANDSEC_VAR, check);
 	if (check > 0) {
 		restore_andsec = Find_Partition_By_Path("/and-sec");
@@ -1034,8 +993,6 @@ int TWPartitionManager::Run_Restore(string Restore_Name) {
 		}
 		if (restore_cache != NULL && !restore_cache->Check_MD5(Restore_Name))
 			return false;
-		if (restore_boot != NULL && !restore_boot->Check_MD5(Restore_Name))
-			return false;
 		if (restore_andsec != NULL && !restore_andsec->Check_MD5(Restore_Name))
 			return false;
 		if (restore_sdext != NULL && !restore_sdext->Check_MD5(Restore_Name))
@@ -1057,8 +1014,6 @@ int TWPartitionManager::Run_Restore(string Restore_Name) {
 	if (restore_data != NULL && !Restore_Partition(restore_data, Restore_Name, partition_count))
 		return false;
 	if (restore_cache != NULL && !Restore_Partition(restore_cache, Restore_Name, partition_count))
-		return false;
-	if (restore_boot != NULL && !Restore_Partition(restore_boot, Restore_Name, partition_count))
 		return false;
 	if (restore_andsec != NULL && !Restore_Partition(restore_andsec, Restore_Name, partition_count))
 		return false;
@@ -1166,10 +1121,6 @@ void TWPartitionManager::Set_Restore_Files(string Restore_Name) {
 			tw_restore_data = 1;
 		if (Part->Backup_Path == "/cache")
 			tw_restore_cache = 1;
-		if (Part->Backup_Path == "/recovery")
-			tw_restore_recovery = 1;
-		if (Part->Backup_Path == "/boot")
-			tw_restore_boot = 1;
 		if (Part->Backup_Path == "/and-sec")
 			tw_restore_andsec = 1;
 		if (Part->Backup_Path == "/sd-ext")

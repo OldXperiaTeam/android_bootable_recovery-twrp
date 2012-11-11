@@ -238,9 +238,6 @@ int OpenRecoveryScript::run_script_file(void) {
 						} else if ((value2[i] == 'C' || value2[i] == 'c') && DataManager_GetIntValue(TW_RESTORE_CACHE_VAR) > 0) {
 							tw_restore_cache = 1;
 							ui_print("Cache\n");
-						} else if ((value2[i] == 'R' || value2[i] == 'r') && DataManager_GetIntValue(TW_RESTORE_RECOVERY_VAR) > 0) {
-							tw_restore_recovery = 1;
-							ui_print("Recovery\n");
 						} else if (value2[i] == '1' && DataManager_GetIntValue(TW_RESTORE_SP1_VAR) > 0) {
 							tw_restore_sp1 = 1;
 							ui_print("%s\n", "Special1");
@@ -250,9 +247,6 @@ int OpenRecoveryScript::run_script_file(void) {
 						} else if (value2[i] == '3' && DataManager_GetIntValue(TW_RESTORE_SP3_VAR) > 0) {
 							tw_restore_sp3 = 1;
 							ui_print("%s\n", "Special3");
-						} else if ((value2[i] == 'B' || value2[i] == 'b') && DataManager_GetIntValue(TW_RESTORE_BOOT_VAR) > 0) {
-							tw_restore_boot = 1;
-							ui_print("Boot\n");
 						} else if ((value2[i] == 'A' || value2[i] == 'a') && DataManager_GetIntValue(TW_RESTORE_ANDSEC_VAR) > 0) {
 							tw_restore_andsec = 1;
 							ui_print("Android Secure\n");
@@ -474,9 +468,6 @@ int OpenRecoveryScript::Backup_Command(string Options) {
 		} else if (Options.substr(i, 1) == "C" || Options.substr(i, 1) == "c") {
 			DataManager_SetIntValue(TW_BACKUP_CACHE_VAR, 1);
 			ui_print("Cache\n");
-		} else if (Options.substr(i, 1) == "R" || Options.substr(i, 1) == "r") {
-			DataManager_SetIntValue(TW_BACKUP_RECOVERY_VAR, 1);
-			ui_print("Recovery\n");
 		} else if (Options.substr(i, 1) == "1") {
 			DataManager_SetIntValue(TW_BACKUP_SP1_VAR, 1);
 			ui_print("%s\n", "Special1");
@@ -486,9 +477,6 @@ int OpenRecoveryScript::Backup_Command(string Options) {
 		} else if (Options.substr(i, 1) == "3") {
 			DataManager_SetIntValue(TW_BACKUP_SP3_VAR, 1);
 			ui_print("%s\n", "Special3");
-		} else if (Options.substr(i, 1) == "B" || Options.substr(i, 1) == "b") {
-			DataManager_SetIntValue(TW_BACKUP_BOOT_VAR, 1);
-			ui_print("Boot\n");
 		} else if (Options.substr(i, 1) == "A" || Options.substr(i, 1) == "a") {
 			DataManager_SetIntValue(TW_BACKUP_ANDSEC_VAR, 1);
 			ui_print("Android Secure\n");

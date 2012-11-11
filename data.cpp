@@ -691,7 +691,7 @@ void DataManager::SetDefaultValues()
 	mValues.insert(make_pair(TW_BACKUP_NAME, make_pair("(Current Date)", 0)));
 	mValues.insert(make_pair(TW_BACKUP_SYSTEM_VAR, make_pair("1", 1)));
     mValues.insert(make_pair(TW_BACKUP_DATA_VAR, make_pair("1", 1)));
-    mValues.insert(make_pair(TW_BACKUP_BOOT_VAR, make_pair("1", 1)));
+    mValues.insert(make_pair(TW_BACKUP_BOOT_VAR, make_pair("0", 1)));
     mValues.insert(make_pair(TW_BACKUP_RECOVERY_VAR, make_pair("0", 1)));
     mValues.insert(make_pair(TW_BACKUP_CACHE_VAR, make_pair("0", 1)));
     mValues.insert(make_pair(TW_BACKUP_SP1_VAR, make_pair("0", 1)));

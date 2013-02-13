@@ -34,6 +34,7 @@
 #include "roots.h"
 #include "verifier.h"
 #include "ui.h"
+#include "extra-functions.h"
 
 extern RecoveryUI* ui;
 

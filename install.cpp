@@ -21,7 +21,6 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <sys/vfs.h>
 
 #include "common.h"
 #include "install.h"
@@ -34,13 +33,11 @@
 #include "roots.h"
 #include "verifier.h"
 #include "ui.h"
-#include "extra-functions.h"
 
 extern RecoveryUI* ui;
 
 #define ASSUMED_UPDATE_BINARY_NAME  "META-INF/com/google/android/update-binary"
 #define PUBLIC_KEYS_FILE "/res/keys"
-#define INCLUDED_BINARY_NAME "/sbin/update-binary"
 
 // Default allocation of progress bar segments to operations
 static const int VERIFICATION_PROGRESS_TIME = 60;
@@ -51,38 +48,28 @@ static const float DEFAULT_IMAGE_PROGRESS_FRACTION = 0.1;
 // If the package contains an update binary, extract it and run it.
 static int
 try_update_binary(const char *path, ZipArchive *zip, int* wipe_cache) {
-    struct statfs st;
-    char* binary = "/tmp/update_binary";
-
-    if (statfs(INCLUDED_BINARY_NAME, &st) != 0) {
-        const ZipEntry* binary_entry =
-                mzFindZipEntry(zip, ASSUMED_UPDATE_BINARY_NAME);
-        if (binary_entry == NULL) {
-            mzCloseZipArchive(zip);
-            return INSTALL_CORRUPT;
-        }
-
-        unlink(binary);
-        int fd = creat(binary, 0755);
-        if (fd < 0) {
-            mzCloseZipArchive(zip);
-            LOGE("Can't make %s\n", binary);
-            return INSTALL_ERROR;
-        }
-        bool ok = mzExtractZipEntryToFile(zip, binary_entry, fd);
-        close(fd);
+    const ZipEntry* binary_entry =
+            mzFindZipEntry(zip, ASSUMED_UPDATE_BINARY_NAME);
+    if (binary_entry == NULL) {
         mzCloseZipArchive(zip);
+        return INSTALL_CORRUPT;
+    }
 
-        if (!ok) {
-            LOGE("Can't copy %s\n", ASSUMED_UPDATE_BINARY_NAME);
-            return INSTALL_ERROR;
-        }
-    } else {
-        char command[255];
+    const char* binary = "/tmp/update_binary";
+    unlink(binary);
+    int fd = creat(binary, 0755);
+    if (fd < 0) {
+        mzCloseZipArchive(zip);
+        LOGE("Can't make %s\n", binary);
+        return INSTALL_ERROR;
+    }
+    bool ok = mzExtractZipEntryToFile(zip, binary_entry, fd);
+    close(fd);
+    mzCloseZipArchive(zip);
 
-        LOGI("Using update-binary included in recovery.\n");
-        sprintf(command, "cp %s %s", INCLUDED_BINARY_NAME, binary);
-        __system(command);
+    if (!ok) {
+        LOGE("Can't copy %s\n", ASSUMED_UPDATE_BINARY_NAME);
+        return INSTALL_ERROR;
     }
 
     int pipefd[2];
